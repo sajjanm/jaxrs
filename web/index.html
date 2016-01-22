@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="jquery.js"></script> 
+    
+    </head>
+    <body>
+        <div>TODO write content</div>
+        <div id="loading" style="display:none">Still loading</div>
+        
+        <form id="form" method="post">
+        <!--<form id="form" action="/JAXRSExample/api/studentapi/save" method="post">-->        
+        
+            <div>
+                <label>First Name</label>
+                <input type="text" id="first_name" name="first_name"/>
+            </div>
+            <div>
+                <label>Last Name</label>
+                <input type="text" id="last_name" name="last_name"/>
+            </div>
+            <div>
+                <label>Email</label>
+                <input type="email" id="email" name="email"/>
+            </div>
+            <button type="submit" id="save-btn">save</button>
+        </form>
+        
+        <ul id="result">
+            
+        </ul>
+            
+        <script>
+        $(document).on("ready",function(){
+            $("#save-btn").on('click',function(){
+                $.post("http://localhost:8080/JAXRSExample/api/studentapi/save", $("#form").serialize(),function(data){
+                    if(data !=null){
+                        alert(data);
+                    }
+                }); 
+                return false;
+            });
+            
+            $.getJSON("http://localhost:8080/JAXRSExample/api/studentapi/list",function(data){
+               var $result=$("#result");
+               var content="";
+               $.each(data,function(i,o){
+                  content +="<li class='row' rel='"+o.id+"' >" + o.firstName + " " + o.lastName + "</li>" ;  
+               });
+               $result.html(content);
+               $(".row").on('click',function(){
+                    var $loading = $("#loading")
+                    $loading.show();
+                    var id=$(this).attr("rel");
+                    $.getJSON("http://localhost:8080/JAXRSExample/api/studentapi/" +id ,function(data){
+                        $("#first_name").val(data.firstName);
+                        $("#last_name").val(data.lastName);
+                        $("#email").val(data.email);
+                        $loading.hide();
+                    });
+                });
+            });
+        });
+        </script>
+    </body>
+</html>
